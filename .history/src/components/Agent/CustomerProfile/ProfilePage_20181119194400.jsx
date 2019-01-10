@@ -1,3 +1,0 @@
-class ProfilePage extends Component{
-    
-}

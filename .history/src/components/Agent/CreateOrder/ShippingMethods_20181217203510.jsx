@@ -1,4 +1,0 @@
-function ShippingMethods(props){
-
-    
-}
