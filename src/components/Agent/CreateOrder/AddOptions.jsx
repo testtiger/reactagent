@@ -39,7 +39,7 @@ export default class AddOptions extends Component {
             <div className="input-group mb-3">
               <input
                 className="form-control"
-                placeholder="Search with Name"
+                placeholder="Search by SKU"
                 aria-label="Search"
                 aria-describedby="basic-addon2"
                 name="skuId"
