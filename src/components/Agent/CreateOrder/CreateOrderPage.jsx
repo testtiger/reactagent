@@ -30,7 +30,8 @@ export default class CreateOrderPage extends React.Component {
       shippingAddress: "",
       availableShippingMethods: [],
       selectedShippingMethod: "",
-      payment: ""
+      payment: "",
+      orderTotal: "229.99"
     };
   }
 
@@ -116,8 +117,6 @@ export default class CreateOrderPage extends React.Component {
     }
     //alert(id);
     let matchIndex = this.getMatchingItemIndexBySkuId(id);
-    // alert("getMatchingItemIndexBySkuId");
-    //alert(matchIndex);
     console.log(this.state.items);
     if (matchIndex == -1) {
       return;
@@ -125,6 +124,7 @@ export default class CreateOrderPage extends React.Component {
     let localState = { ...this.state };
     localState.items.splice(matchIndex, 1);
     this.setState({ items: localState.items });
+    this.makePriceOrderCall(this.state.items);
   }
   addBySku(skuId) {
     if (!skuId) {
@@ -216,12 +216,12 @@ export default class CreateOrderPage extends React.Component {
     }
   }
 
-  makePriceOrderCall(response) {
+  makePriceOrderCall(products) {
     //Inside rest call /promise this will not work so use self
     var self = this; //inside promise this will not work so store it as self
 
     if (self.state.items.length > 0 && self.state.orderId !== null) {
-      let shoppingCartItems = self.makeShoppingCartWithItems(response);
+      let shoppingCartItems = self.makeShoppingCartWithItems(products);
 
       let requestObject = {
         orderId: self.state.orderId,
@@ -260,9 +260,64 @@ export default class CreateOrderPage extends React.Component {
           localState.orderId = endPointResponse.id;
           localState.siteId = endPointResponse.siteId;
           localState.plg = endPointResponse.priceListGroup;
+          localState.orderTotal = endPointResponse.priceInfo.total;
 
           self.setState({ ...localState });
         }
+        if (endPointResponse.errorCode) {
+          alert(endPointResponse.message);
+        }
+      });
+    }
+  }
+
+  makeSubmitOrderCall(products) {
+    //Inside rest call /promise this will not work so use self
+    var self = this; //inside promise this will not work so store it as self
+
+    if (self.state.items.length > 0 && self.state.orderId !== null) {
+      let shoppingCartItems = self.makeShoppingCartWithItems(products);
+
+      let requestObject = {
+        profileId: self.state.profileId,
+        shoppingCart: {
+          items: shoppingCartItems,
+          orderTotal: self.state.orderTotal
+        },
+        amountRemaining: self.state.orderTotal,
+        op: "submitOrder",
+        payments: {
+          nameOnCard: "test",
+          cardType: "visa",
+          cardNumber: "4111111111111111",
+          cardCVV: "123",
+          endMonth: "12",
+          endYear: 2020,
+          type: "card",
+          expiryMonth: "12",
+          expiryYear: "2040",
+          paymentMethodType: "card",
+          cardTypeName: "Visa"
+        },
+        shippingMethod: {
+          value: self.state.selectedShippingMethod
+        },
+        shippingAddress: self.state.shippingAddress,
+        billingAddress: self.state.shippingAddress,
+        id: self.state.orderId
+      };
+
+      console.log(requestObject);
+      let uri = "/ccagentui/v1/orders";
+      let queryParams = {};
+      var headers = { Authorization: sessionStorage.getItem("token") };
+
+      makePostCall(uri, headers, requestObject).then(function(
+        endPointResponse
+      ) {
+        let localState = {};
+        console.log(" response  ============>", endPointResponse);
+
         if (endPointResponse.errorCode) {
           alert(endPointResponse.message);
         }
@@ -492,7 +547,7 @@ export default class CreateOrderPage extends React.Component {
   }
   onClickPlaceOrder() {
     alert("clicked on place order");
-    console.log(this.makeCreateOrderCall());
+    console.log(this.makeSubmitOrderCall(this.state.items));
   }
 
   updateShippingAddress(shippingAddressObject) {
@@ -503,6 +558,7 @@ export default class CreateOrderPage extends React.Component {
     shippingAddressObject["stateName"] = shippingAddressObject.state;
     console.log(shippingAddressObject);
     this.setState({ shippingAddress: shippingAddressObject });
+    this.setState({ availableShippingMethods: [] });
   }
 
   populateShippingMethods() {
@@ -557,24 +613,11 @@ export default class CreateOrderPage extends React.Component {
     });
   }
 
-  selectedShippingMethod(shippinMethod) {
-    this.setState({ selectedShippingMethod: shippinMethod });
+  selectedShippingMethod(event) {
+    this.setState({ selectedShippingMethod: event.target.value });
   }
 
   render() {
-    let shippingOptions = null;
-    if (
-      this.state.availableShippingMethods.length > 0 &&
-      this.state.shippingAddress
-    ) {
-      shippingOptions = (
-        <ShippingMethods
-          shippingMethodsList={this.state.availableShippingMethods}
-          selectedMethod={this.selectedShippingMethod.bind(this)}
-          populateShippinMethods={this.populateShippingMethods.bind(this)}
-        />
-      );
-    }
     return (
       <div className="container">
         <h3>Create Order</h3>
@@ -595,19 +638,11 @@ export default class CreateOrderPage extends React.Component {
         <div className="row">
           <AddressFields addAddress={this.updateShippingAddress.bind(this)} />
           <div className="col-sm-5">
-            <div className="dropdown">
-              <button
-                onClick={this.populateShippingMethods.bind(this)}
-                className="btn btn-primary dropdown-toggle"
-                type="button"
-                data-toggle="dropdown"
-              >
-                Shipping Methods...
-                <span class="caret" />
-              </button>
-
-              {shippingOptions}
-            </div>
+            <ShippingMethods
+              shippingMethodsList={this.state.availableShippingMethods}
+              onChange={this.selectedShippingMethod.bind(this)}
+              loadShippingMethods={this.populateShippingMethods.bind(this)}
+            />
           </div>
         </div>
         <button onClick={this.onClickPlaceOrder.bind(this)}>Placeorder</button>
