@@ -14,22 +14,53 @@ export default class ShippingMethods extends Component {
   }
 
   render() {
-    var self = this;
-    var sm = this.props.shippingMethodsList.map(function(method) {
-      return (
-        <li>
-          <a
-            class="dropdown-item"
-            key={method.getId()}
-            href="#"
-            onClick={self.onClickingShippingMethod.bind(self, method.getId())}
-          >
+    /***var self = this;
+
+    let shippingOptions = null;
+    if (
+      this.state.availableShippingMethods.length > 0 &&
+      this.state.shippingAddress
+    ) {
+      var sm = this.state.availableShippingMethods.map(function(method) {
+        return (
+          <option key={method.getId()} value={method.getId()}>
             {method.getDisplayName()}
-          </a>
-        </li>
+          </option>
+        );
+      });
+      shippingOptions = (
+        <select onChange={this.selectedShippingMethod.bind(this)}>{sm}</select>
       );
-    });
-    return <ul className="dropdown-menu">{sm}</ul>;
+    } else {
+      shippingOptions = (
+        <select onClick={this.populateShippingMethods.bind(this)}>
+          <option>Select shipping method...</option>
+        </select>
+      );
+    }
+ */
+    var self = this;
+    let shippingOptions = null;
+    if (this.props.shippingMethodsList.length > 0) {
+      var sm = this.props.shippingMethodsList.map(function(method) {
+        return (
+          <option key={method.getId()} value={method.getId()}>
+            {method.getDisplayName()}
+          </option>
+        );
+      });
+      shippingOptions = <select onChange={this.props.onChange.bind(this)}>
+          {sm}
+        </select>;
+      return shippingOptions;
+    } else {
+      return <button
+        onClick={this.props.loadShippingMethods.bind(this)}
+        >
+          Load Shipping Methods...
+        </button>;
+    }
+
     //return sm;
   }
 
