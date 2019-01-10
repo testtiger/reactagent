@@ -31,7 +31,7 @@ export default class CreateOrderPage extends React.Component {
       availableShippingMethods: [],
       selectedShippingMethod: "",
       payment: "",
-      orderTotal: "229.99"
+      orderTotal: ""
     };
   }
 
