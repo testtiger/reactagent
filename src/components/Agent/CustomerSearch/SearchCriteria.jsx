@@ -140,6 +140,7 @@ class SearchCriteria extends Component {
             <div className="form-group col-md-2" />
             <div className="form-group col-md-1">
               <button
+                type="button"
                 onClick={this.onReset.bind(this)}
                 className="btn btn-secondary"
               >

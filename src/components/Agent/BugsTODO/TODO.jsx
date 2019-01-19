@@ -14,7 +14,7 @@ export default class TODO extends Component {
           <li>on updating shipping Address reset shipping methods</li>
           <li>Add Apply coupons section code</li>
           <li>Think about Shipping surcharge</li>
-          <li></li>
+          <li />
           <li>
             Remove the redudant code present in createOrder & priceorder calls
           </li>
@@ -22,7 +22,10 @@ export default class TODO extends Component {
             if only surcharge product is present show only surcharge shipping
             methods
           </li>
-          <li>removed hard coded email-id & insert profile email id in shipping address</li>
+          <li>
+            removed hard coded email-id & insert profile email id in shipping
+            address
+          </li>
           <li>
             {" "}
             showing sites and price list groups - taking select sites and price
@@ -33,10 +36,22 @@ export default class TODO extends Component {
         <ul>
           <li>
             Customer search : when searching a customer with "M" app is breaking
+            <strong>notes: seems an object is going rather than value</strong>
           </li>
           <li>On Logout : Navigattion displayed twice</li>
           <li>
             Customer search : On clicking enter search criteri becomes empty
+            <strong>
+              issue : When keep 2 buttons using button tag if we don't specify
+              the type explicitly then type always become submit. so pressing
+              enter form will get submitted. FIX: when 2 buttons are there side
+              by side explicitly provide type attibute for button to
+              differetiate which for submit by keeping type=submit for for other
+              button keep type=button For More Info : refer this article
+              <a href="https://dzello.com/blog/2017/02/19/demystifying-enter-key-submission-for-react-forms/">
+                demystifying-enter-key-submission-for-react-forms
+              </a>
+            </strong>
           </li>
           <li>
             Customer search : params like limit is being considered in valid
