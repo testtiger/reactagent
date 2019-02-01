@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 
 export default class Announcements extends Component {
-  constructor(props) {
-    super(props);
-  }
+ 
 
   render() {
     /**[

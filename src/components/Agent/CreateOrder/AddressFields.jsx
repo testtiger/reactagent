@@ -18,7 +18,6 @@ export default class AddressFields extends Component {
         selectedCountry: "",
         country: "United States",
         phoneNumber: "",
-        selectedCountry: "",
         isDefaultBillingAddress: false,
         isDefaultShippingAddress: false,
         isDefaultAddress: false
@@ -72,7 +71,7 @@ export default class AddressFields extends Component {
   render() {
     return (
       <div className="col-sm-7">
-        <h5>Shipping Address :</h5>
+        <h5>{this.props.type} :</h5>
         <div className="row first-row">
           <div className="form-group col-sm-3">
             <input
@@ -89,6 +88,7 @@ export default class AddressFields extends Component {
           </div>
           <div className="form-group col-sm-3">
             <input
+              value={this.state.shippingAddress.lastName}
               onChange={this.onChange.bind(this)}
               type="text"
               class="col-md-12 form-control"
@@ -103,6 +103,7 @@ export default class AddressFields extends Component {
         <div className="row">
           <div className="form-group col-sm-6">
             <select
+              value={this.state.shippingAddress.selectedCountry}
               onChange={this.onChange.bind(this)}
               class="col-md-12 form-control"
               name="selectedCountry"
@@ -117,6 +118,7 @@ export default class AddressFields extends Component {
         <div className="row">
           <div className="form-group col-sm-6">
             <input
+              value={this.state.shippingAddress.address1}
               onChange={this.onChange.bind(this)}
               type="text"
               class="col-md-12 form-control"
@@ -131,6 +133,7 @@ export default class AddressFields extends Component {
         <div className="row">
           <div className="form-group col-sm-6">
             <input
+              value={this.state.shippingAddress.address2}
               onChange={this.onChange.bind(this)}
               type="text"
               class="col-md-12 form-control"
@@ -159,6 +162,7 @@ export default class AddressFields extends Component {
         <div className="row">
           <div className="form-group col-sm-3">
             <input
+              value={this.state.shippingAddress.city}
               onChange={this.onChange.bind(this)}
               type="text"
               class="col-md-12 form-control"
@@ -171,6 +175,7 @@ export default class AddressFields extends Component {
           </div>
           <div className="form-group col-sm-3">
             <select
+              value={this.state.shippingAddress.state}
               onChange={this.onChange.bind(this)}
               class="col-md-12 form-control"
               name="state"
@@ -240,6 +245,7 @@ export default class AddressFields extends Component {
         <div className="row">
           <div className="form-group col-sm-3">
             <input
+              value={this.state.shippingAddress.postalCode}
               onChange={this.onChange.bind(this)}
               type="text"
               class="col-md-12 form-control"
@@ -252,6 +258,7 @@ export default class AddressFields extends Component {
           </div>
           <div className="form-group col-sm-3">
             <input
+              value={this.state.shippingAddress.phoneNumber}
               onChange={this.onChange.bind(this)}
               type="text"
               class="col-md-12 form-control"

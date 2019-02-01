@@ -1,13 +1,9 @@
 import React, { Component } from "react";
-import LoginPage from "../Login/loginpage";
 import Routes from "../Router/route";
-import SearchCriteria from "../CustomerSearch/SearchCriteria";
-import Register from "../CustomerSearch/Registration";
 
 export default class App extends Component {
   render() {
     return <Routes />;
-    //return <LoginPage />;
   }
 }
 

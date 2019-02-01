@@ -1,9 +1,14 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
+
+var navLinksTyle={
+  "background-color": 'yellow',
+  textDecoration: 'none',
+  color: 'black'
+}
 class Navigation extends Component {
-  constructor(props) {
-    super(props);
-  }
+ 
+
 
   isLoggedIn() {
     return sessionStorage.getItem("isLoggedin") === "true";
@@ -15,18 +20,20 @@ class Navigation extends Component {
       return null;
     }
 
-    return (
-      <div className="container ">
+    return <div className="container ">
         <div className="row well">
           <div className="col-md-2">
-            <NavLink to="/welcome">DashBoard</NavLink>
+            <NavLink activeStyle={navLinksTyle} to="/dashboard">
+              DashBoard
+            </NavLink>
           </div>
           <div className="col-md-2">
-            <NavLink to="/customers">Customers</NavLink>
+          <NavLink activeStyle={navLinksTyle} to="/customers">
+              Customers
+            </NavLink>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
 }
 export default Navigation;

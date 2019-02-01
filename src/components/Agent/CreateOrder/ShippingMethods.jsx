@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 
 export default class ShippingMethods extends Component {
-  constructor(props) {
-    super(props);
-  }
+ 
 
   onChange(e) {
     this.props.selectedMethod(e.target.value);

@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import SearchCriteria from "./SearchCriteria";
 import SearchResults from "./SearchResults";
-import Registration from "./Registration";
-import CustomerProfilePage from "../CustomerProfile/CustomerProfilePage";
 import { makeGetCall } from "../Rest/agent-rest-client";
 import { Redirect } from "react-router-dom";
 class CustomerSearchPage extends Component {

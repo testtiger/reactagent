@@ -30,6 +30,7 @@ export default class CustomerProfilePage extends Component {
           });
         }
         if (response.errorCode) {
+          alert(response.message);
           self.setState({ errorMessage: response.message });
         }
       }

@@ -3,14 +3,12 @@ import LineItem from "./LineItem";
 export default class Cart extends Component {
   constructor(props) {
     super(props);
-    this.props.lineItems;
     this.state = {
       items: this.props.lineItems
     };
   }
 
   componentWillMount = () => {
-    this.props.lineItems;
   };
 
   getDerivedStateFromProps() {
@@ -59,15 +57,4 @@ function MakeLineItem(props) {
 
   return <LineItem item={props} />;
 }
-function ComplexLineItem(props) {}
 
-function lookup() {
-  return this.resp.items[0].parentProducts[0];
-}
-function updateQuantity(newQuantity) {
-  this.quantity = newQuantity;
-}
-function skuId() {
-  console.log("-------------->", this.resp.items);
-  return this.lookup().childSKUs[0].repositoryId;
-}

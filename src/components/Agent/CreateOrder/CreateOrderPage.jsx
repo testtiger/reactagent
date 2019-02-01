@@ -4,6 +4,7 @@ import AddOptions from "./AddOptions";
 import OrderSummary from "./OrderSummary";
 import AddressFields from "./AddressFields";
 import ShippingMethods from "./ShippingMethods";
+import Payments from "./Payments";
 
 import {
   makeGetCall,
@@ -27,11 +28,13 @@ export default class CreateOrderPage extends React.Component {
       orderId: null,
       siteId: "",
       plg: "",
-      shippingAddress: "",
+      shippingAddress: null,
       availableShippingMethods: [],
       selectedShippingMethod: "",
-      payment: "",
-      orderTotal: ""
+      billingAddress: null,
+      payment: null,
+      orderTotal: null,
+      coupons: []
     };
   }
 
@@ -65,6 +68,8 @@ export default class CreateOrderPage extends React.Component {
         localState.orderId = endPointResponse.id;
         localState.siteId = endPointResponse.siteId;
         localState.plg = endPointResponse.priceListGroup;
+        localState.orderTotal = endPointResponse.priceInfo.total;
+
         self.setState({ ...localState });
       }
       if (endPointResponse.errorCode) {
@@ -204,9 +209,10 @@ export default class CreateOrderPage extends React.Component {
             return item;
           });
 
-          localState.orderId = endPointResponse.id;
+          localState.orderId = endPointResponse.orderId;
           localState.siteId = endPointResponse.siteId;
           localState.plg = endPointResponse.priceListGroup;
+          localState.orderTotal = endPointResponse.priceInfo.total;
           self.setState({ ...localState });
         }
         if (endPointResponse.errorCode) {
@@ -216,7 +222,7 @@ export default class CreateOrderPage extends React.Component {
     }
   }
 
-  makePriceOrderCall(products) {
+  makePriceOrderCall(products, shippingMethod) {
     //Inside rest call /promise this will not work so use self
     var self = this; //inside promise this will not work so store it as self
 
@@ -225,12 +231,24 @@ export default class CreateOrderPage extends React.Component {
 
       let requestObject = {
         orderId: self.state.orderId,
-        shoppingCart: { items: shoppingCartItems },
+        shoppingCart: { items: shoppingCartItems, coupons: [] },
         combineLineItems: "yes",
-        op: "priceOrder",
-        payments: []
+        op: "priceOrder"
       };
 
+      if (
+        self.state.selectedShippingMethod !== "" &&
+        self.state.selectedShippingMethod !== undefined
+      ) {
+        requestObject.shippingMethod = {
+          value:
+            shippingMethod === undefined
+              ? self.state.selectedShippingMethod
+              : shippingMethod
+        };
+        requestObject.shippingAddress = self.state.shippingAddress;
+        requestObject.billingAddress = self.state.shippingAddress;
+      }
       console.log(requestObject);
       let uri = "/ccagentui/v1/orders";
       let queryParams = {};
@@ -257,11 +275,11 @@ export default class CreateOrderPage extends React.Component {
             shoppingCartFromPriceOrderResp
           );
           localState.items = shoppingCartFromPriceOrderResp;
-          localState.orderId = endPointResponse.id;
+          localState.orderId = endPointResponse.orderId;
           localState.siteId = endPointResponse.siteId;
           localState.plg = endPointResponse.priceListGroup;
           localState.orderTotal = endPointResponse.priceInfo.total;
-
+          localState.amountRemaining = endPointResponse.priceInfo.total;
           self.setState({ ...localState });
         }
         if (endPointResponse.errorCode) {
@@ -282,30 +300,34 @@ export default class CreateOrderPage extends React.Component {
         profileId: self.state.profileId,
         shoppingCart: {
           items: shoppingCartItems,
+          coupons: [],
           orderTotal: self.state.orderTotal
         },
         amountRemaining: self.state.orderTotal,
         op: "submitOrder",
-        payments: {
-          nameOnCard: "test",
-          cardType: "visa",
-          cardNumber: "4111111111111111",
-          cardCVV: "123",
-          endMonth: "12",
-          endYear: 2020,
-          type: "card",
-          expiryMonth: "12",
-          expiryYear: "2040",
-          paymentMethodType: "card",
-          cardTypeName: "Visa"
-        },
+        payments: [
+          {
+            type: "card",
+            nameOnCard: "Diwakara",
+            cardType: "visa",
+            cardNumber: "4111111111111111",
+            cardCVV: "123",
+            endMonth: "12",
+            endYear: 2080,
+            expiryMonth: "12",
+            expiryYear: "2080",
+            paymentMethodType: "card",
+            cardTypeName: "Visa"
+          }
+        ],
         shippingMethod: {
           value: self.state.selectedShippingMethod
         },
         shippingAddress: self.state.shippingAddress,
-        billingAddress: self.state.shippingAddress,
-        id: self.state.orderId
+        billingAddress: self.state.shippingAddress
       };
+      requestObject.id = self.state.orderId;
+      requestObject.appliedPromotions = [];
 
       console.log(requestObject);
       let uri = "/ccagentui/v1/orders";
@@ -317,14 +339,14 @@ export default class CreateOrderPage extends React.Component {
       ) {
         let localState = {};
         console.log(" response  ============>", endPointResponse);
-
+        alert("Order created successfully is", endPointResponse.orderId);
         if (endPointResponse.errorCode) {
           alert(endPointResponse.message);
         }
       });
     }
   }
-  
+
   onChange(e) {
     var name = e.target.name;
     var value = e.target.value;
@@ -354,15 +376,24 @@ export default class CreateOrderPage extends React.Component {
     console.log(this.makeSubmitOrderCall(this.state.items));
   }
 
-  updateShippingAddress(shippingAddressObject) {
-    console.log(shippingAddressObject);
-    shippingAddressObject["state_ISOCode"] =
-      shippingAddressObject.selectedCountry + "-" + shippingAddressObject.state;
-    shippingAddressObject["selectedState"] = shippingAddressObject.state;
-    shippingAddressObject["stateName"] = shippingAddressObject.state;
-    console.log(shippingAddressObject);
-    this.setState({ shippingAddress: shippingAddressObject });
-    this.setState({ availableShippingMethods: [] });
+  updateShippingAddress(AddressObject, type) {
+    if ((type = "ShippingAddress")) {
+      console.log(AddressObject);
+      AddressObject["state_ISOCode"] =
+        AddressObject.selectedCountry + "-" + AddressObject.state;
+      AddressObject["selectedState"] = AddressObject.state;
+      AddressObject["stateName"] = AddressObject.state;
+      console.log(AddressObject);
+      this.setState({ shippingAddress: AddressObject });
+    } else if ((type = "BillingAddress")) {
+      console.log(AddressObject);
+      AddressObject["state_ISOCode"] =
+        AddressObject.selectedCountry + "-" + AddressObject.state;
+      AddressObject["selectedState"] = AddressObject.state;
+      AddressObject["stateName"] = AddressObject.state;
+      console.log(AddressObject);
+      this.setState({ billingAddress: AddressObject });
+    }
   }
 
   populateShippingMethods() {
@@ -418,10 +449,13 @@ export default class CreateOrderPage extends React.Component {
   }
 
   selectedShippingMethod(event) {
-    this.setState({ selectedShippingMethod: event.target.value });
+    let chosenShippingMethod = event.target.value;
+    this.setState({ selectedShippingMethod: chosenShippingMethod });
+    this.makePriceOrderCall(this.state.items, chosenShippingMethod);
   }
 
   render() {
+    
     return (
       <div className="container">
         <h3>Create Order</h3>
@@ -440,7 +474,10 @@ export default class CreateOrderPage extends React.Component {
         </div>
         <hr />
         <div className="row">
-          <AddressFields addAddress={this.updateShippingAddress.bind(this)} />
+          <AddressFields
+            addAddress={this.updateShippingAddress.bind(this)}
+            type="ShippingAddress"
+          />
           <div className="col-sm-5">
             <ShippingMethods
               shippingMethodsList={this.state.availableShippingMethods}
@@ -449,6 +486,17 @@ export default class CreateOrderPage extends React.Component {
             />
           </div>
         </div>
+
+        <div className="row">
+          <AddressFields
+            addAddress={this.updateShippingAddress.bind(this)}
+            type="BillingAddress"
+          />
+          <div className="col-sm-5">
+            <Payments />
+          </div>
+        </div>
+
         <button onClick={this.onClickPlaceOrder.bind(this)}>Placeorder</button>
       </div>
     );

@@ -1,20 +1,15 @@
 import React, { Component } from "react";
 
 class SearchResults extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   saveProfileAccessed(profileObject, isProfilePageRequested) {
     console.log("------------->search result click", this.props);
     console.log("------------->search result profile", profileObject);
-    if (profileObject===undefined){
-      throw TypeError("Check Profile Object value")
+    if (profileObject === undefined) {
+      throw TypeError("Check Profile Object value");
     }
     if (this.props.onClickProfileInfo && isProfilePageRequested) {
       this.props.onClickProfileInfo(profileObject.profileDetail.id);
-    }
-     else if (this.props.onClickCreateOrderLink) {
+    } else if (this.props.onClickCreateOrderLink) {
       this.props.onClickCreateOrderLink(profileObject.profileDetail.id);
     }
   }
@@ -99,7 +94,7 @@ function TableBody(props) {
         <td>
           <button
             onClick={() => {
-              props.onSearchResultClick(profile,true);
+              props.onSearchResultClick(profile, true);
             }}
           >
             Info...
@@ -108,7 +103,7 @@ function TableBody(props) {
         <td>
           <button
             onClick={() => {
-              props.onSearchResultClick(profile,false);
+              props.onSearchResultClick(profile, false);
             }}
           >
             {profile.hasIncompleteOrder ? "Complete" : "+New"}

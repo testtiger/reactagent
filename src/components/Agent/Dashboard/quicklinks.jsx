@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 
 export default class QuickLinks extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         var quickLinksList = this.props.qucikLinks;

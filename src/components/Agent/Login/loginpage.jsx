@@ -1,7 +1,16 @@
 import React, { Component } from "react";
 import { makeRestcall } from "../Rest/agent-rest-client.js";
-import DashBoard from "../Dashboard/DashboardPage.jsx";
-import Navigation from "../Shared/Navigation";
+import { Redirect } from "react-router-dom";
+import {
+  Card,
+  Container,
+  Grid,
+  Button,
+  Checkbox,
+  Form,
+  Header,
+  Image
+} from "semantic-ui-react";
 export default class LoginPage extends Component {
   constructor(props) {
     super(props);
@@ -51,7 +60,9 @@ export default class LoginPage extends Component {
       alert("Username & password cannot be empty");
     }
   }
-  login() {
+  login(e) {
+    e.preventDefault();
+    var self = this;
     if (this.state.password && this.state.username) {
       var payload = this.state;
       payload["grant_type"] = "password";
@@ -66,64 +77,59 @@ export default class LoginPage extends Component {
           window.localStorage.setItem("isLoggedin", true);
           sessionStorage.setItem("token", "Bearer " + response.access_token);
           sessionStorage.setItem("isLoggedin", true);
-          this.setState({ isLoggedin: true });
+          self.setState({ isLoggedin: true });
         } else {
           alert("Invalid user Name & password");
         }
       });
     }
   }
+
   render() {
     if (this.state.isLoggedin) {
-      return (
-        <div>
-          <Navigation />
-          <DashBoard />
-        </div>
-      );
+      return <Redirect to="/dashboard/" />;
     } else {
       return (
-        <div className="container">
-          <div className="row">
-            <div className="col-md-2" />
-            <div className="col-md-10" />
-            <div className="col-md-82" />
-          </div>
-          <div className="row">
-            <div className="col-md-2" />
-            <div className="col-md-8">
-              <div className="form-group">
-                <label>UserName:</label>
-                <input
-                  className="form-control col-lg-5"
-                  required={true}
-                  type="text"
-                  name="username"
-                  value={this.state.username}
-                  onChange={this.onChange.bind(this)}
-                />
-                <br />
-                <label>Password:</label>
-                <input
-                  className="form-control col-lg-5"
-                  required={true}
-                  type="password"
-                  name="password"
-                  value={this.state.password}
-                  onChange={this.onChange.bind(this)}
-                />
-                <br />
-                <button
-                  className="btn btn-primary"
-                  onClick={this.login.bind(this)}
-                >
-                  submit
-                </button>
-                <p>{this.state.username + "" + this.state.password}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Container>
+          <Grid>
+            <Grid.Column width={4}>
+              <Card>
+                <Image src="https://react.semantic-ui.com/images/avatar/large/matthew.png" />
+              </Card>
+            </Grid.Column>
+
+            <Grid.Column width={9}>
+              <Header> Login with service/service</Header>
+              <Form>
+                <Form.Field>
+                  <label>UserName :</label>
+                  <input
+                    focus
+                    placeholder="User Name"
+                    name="username"
+                    value={this.state.username}
+                    onChange={this.onChange.bind(this)}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <label>Password :</label>
+                  <input
+                    focus
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    value={this.state.password}
+                    onChange={this.onChange.bind(this)}
+                  />
+                </Form.Field>
+                <Button positive type="submit" onClick={this.login.bind(this)}>
+                  Login
+                </Button>
+              </Form>
+            </Grid.Column>
+            <Grid.Column width={3} />
+          </Grid>
+        </Container>
       );
     }
   }
