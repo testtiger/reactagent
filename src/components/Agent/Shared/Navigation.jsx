@@ -21,18 +21,18 @@ class Navigation extends Component {
     }
 
     return <div className="container ">
-        <div className="row well">
+        <nav className="navbar navbar-light">
           <div className="col-md-2">
             <NavLink activeStyle={navLinksTyle} to="/dashboard">
               DashBoard
             </NavLink>
           </div>
           <div className="col-md-2">
-          <NavLink activeStyle={navLinksTyle} to="/customers">
+            <NavLink activeStyle={navLinksTyle} to="/customers">
               Customers
             </NavLink>
           </div>
-        </div>
+        </nav>
       </div>;
   }
 }
